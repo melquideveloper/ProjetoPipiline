@@ -50,24 +50,17 @@ jobs:
         run: |
           cp .env.testing .env      
 
-      # Passo 4: Configurar o banco de dados (caso esteja usando PostgreSQL no CI)
-      - name: Wait for PostgreSQL to be ready
+     # Passo 4: Garantir que o banco de dados exista
+      - name: Create database if not exists
         run: |
-          until pg_isready -h 127.0.0.1 -p 5432 -U postgres; do
+          until pg_isready -h postgres -p 5432 -U postgres; do
             echo "Waiting for database..."
             sleep 2
           done
+          docker exec postgres psql -U postgres -c "CREATE DATABASE IF NOT EXISTS LaravelPipe;"
 
       # Passo 5: Rodar as migrações e os testes
       - name: Run migrations and tests
         run: |
           php artisan migrate
           php artisan test 
-
-     # Passo 7: Deploy (opcional)
-      # - name: Deploy to production server
-      #   env:
-      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      #   run: |
-      #     echo "$SSH_PRIVATE_KEY" | ssh-add -
-      #     ssh user@your-server 'cd /caminho/do/projeto && git pull && composer install && php artisan migrate'
