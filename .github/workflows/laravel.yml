@@ -43,5 +43,6 @@ jobs:
       # Passo 5: Rodar as migrações e os testes
       - name: Run migrations and tests
         run: |
+          php artisan key:generate --env=testing
           php artisan migrate
           php artisan test
