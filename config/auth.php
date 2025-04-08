@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+    
+        'api' => [
+            'driver' => 'jwt',  // Usando o driver jwt para a autenticação via token
+            'provider' => 'users',
+        ],
     ],
 
     /*
