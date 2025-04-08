@@ -12,21 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: LaravelPipe
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 020385
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       # Passo 1: Checar o código
       - name: Check out the code
@@ -37,7 +22,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-          extensions: mbstring, bcmath, zip, pdo, pdo_pgsql
+          extensions: mbstring, bcmath, zip, pdo, pdo_sqlite
           coverage: xdebug
 
       # Passo 3: Instalar dependências
@@ -45,22 +30,18 @@ jobs:
         run: |
           composer install --no-interaction --prefer-dist
           
-     # Passo 3.1: Enveriment test
+      # Passo 3.1: Setar o arquivo de ambiente para testing
       - name: Set environment file to testing
         run: |
           cp .env.testing .env      
 
-     # Passo 4: Garantir que o banco de dados exista
-      - name: Create database if not exists
+      # Passo 4: Garantir que o banco de dados SQLite exista
+      - name: Create SQLite database if not exists
         run: |
-          until pg_isready -h postgres -p 5432 -U postgres; do
-            echo "Waiting for database..."
-            sleep 2
-          done
-          docker exec postgres psql -U postgres -c "CREATE DATABASE IF NOT EXISTS LaravelPipe;"
+          touch database/database.sqlite
 
       # Passo 5: Rodar as migrações e os testes
       - name: Run migrations and tests
         run: |
           php artisan migrate
-          php artisan test 
+          php artisan test
