@@ -44,5 +44,6 @@ jobs:
       - name: Run migrations and tests
         run: |
           php artisan key:generate --env=testing
+          php update-jwt-secret.php
           php artisan migrate
           php artisan test
