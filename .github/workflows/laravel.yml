@@ -56,8 +56,8 @@ jobs:
       # Passo 5: Rodar as migrações e os testes
       - name: Run migrations and tests
         run: |
-          php artisan migrate --env=testing
-          php artisan test --env=testing     
+          php artisan migrate
+          php artisan test 
 
      # Passo 7: Deploy (opcional)
       # - name: Deploy to production server
